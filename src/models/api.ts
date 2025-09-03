@@ -7,11 +7,11 @@ import {
   DBUser,
 } from "./db";
 
-export type APICreateUser = DBCreateUser;
-export type APIUser = Omit<DBUser, "password">;
+export type ApiCreateUser = DBCreateUser;
+export type ApiUser = Omit<DBUser, "password">;
 
-export type APICreateChat = DBCreateChat;
-export type APIChat = DBChat;
+export type ApiCreateChat = DBCreateChat;
+export type ApiChat = DBChat;
 
 export type ApiCreateMessage = DBCreateMessage;
-export type APiMessage = DBMessage;
+export type ApiMessage = DBMessage;

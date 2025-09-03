@@ -10,6 +10,4 @@ app.get("/", (c) => {
   return c.json({ message: "Hello Hono!" });
 });
 
-console.log(Bun.env.TEST);
-console.log(Bun.env.AI);
 export default app;

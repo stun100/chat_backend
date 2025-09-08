@@ -114,29 +114,30 @@ describe("auth tests", () => {
     expect(await response.json()).toEqual({
       success: false,
       error: {
+        name: "ZodError",
         issues: [
           {
-            validation: "email",
-            code: "invalid_string",
-            message: "Invalid email",
+            origin: "string",
+            code: "invalid_format",
+            format: "email",
+            pattern:
+              "/^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$/",
             path: ["email"],
+            message: "Invalid email address",
           },
           {
-            code: "invalid_type",
             expected: "string",
-            received: "undefined",
+            code: "invalid_type",
             path: ["password"],
-            message: "Required",
+            message: "Invalid input: expected string, received undefined",
           },
           {
-            code: "invalid_type",
             expected: "string",
-            received: "undefined",
+            code: "invalid_type",
             path: ["name"],
-            message: "Required",
+            message: "Invalid input: expected string, received undefined",
           },
         ],
-        name: "ZodError",
       },
     });
   });
@@ -152,22 +153,24 @@ describe("auth tests", () => {
     expect(await response.json()).toEqual({
       success: false,
       error: {
+        name: "ZodError",
         issues: [
           {
-            validation: "email",
-            code: "invalid_string",
-            message: "Invalid email",
+            origin: "string",
+            code: "invalid_format",
+            format: "email",
+            pattern:
+              "/^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$/",
             path: ["email"],
+            message: "Invalid email address",
           },
           {
-            code: "invalid_type",
             expected: "string",
-            received: "undefined",
+            code: "invalid_type",
             path: ["password"],
-            message: "Required",
+            message: "Invalid input: expected string, received undefined",
           },
         ],
-        name: "ZodError",
       },
     });
   });

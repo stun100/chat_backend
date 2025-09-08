@@ -30,7 +30,21 @@ export function createAuthApp(
 ) {
   authApp.post(
     REGISTER_ROUTE,
-    zValidator("json", registerSchema),
+    zValidator("json", registerSchema, (result, c) => {
+      if (!result.success) {
+        return c.json(
+          {
+            success: result.success,
+            error: {
+              name: result.error.name,
+              issues: result.error.issues,
+            },
+          },
+          400
+        );
+      }
+    }),
+    // zValidator("json", registerSchema),
     async (c) => {
       const { email, password, name } = c.req.valid("json");
       if (await userResource.find({ email })) {
@@ -45,18 +59,38 @@ export function createAuthApp(
   );
 
   // Returns an instance of Hono class
-  authApp.post(LOGIN_ROUTE, zValidator("json", loginSchema), async (c) => {
-    const { email, password } = c.req.valid("json");
-    const fulluser = await userResource.find({ email });
-    if (
-      !fulluser ||
-      !(await Bun.password.verify(password, fulluser.password))
-    ) {
-      return c.json({ error: ERROR_INVALID_CREDENTIALS }, 401);
+  authApp.post(
+    LOGIN_ROUTE,
+    zValidator("json", loginSchema, (result, c) => {
+      if (!result.success) {
+        return c.json(
+          {
+            success: result.success,
+            error: {
+              name: result.error.name,
+              issues: result.error.issues,
+            },
+          },
+          400
+        );
+      }
+    }),
+    async (c) => {
+      const { email, password } = c.req.valid("json");
+      const fulluser = await userResource.find({ email });
+      if (
+        !fulluser ||
+        !(await Bun.password.verify(password, fulluser.password))
+      ) {
+        return c.json({ error: ERROR_INVALID_CREDENTIALS }, 401);
+      }
+      const { JWT_SECRET } = env<{ JWT_SECRET: string }, typeof c>(c);
+      const token = await sign(
+        { ...fulluser, password: undefined },
+        JWT_SECRET
+      );
+      return c.json({ token });
     }
-    const { JWT_SECRET } = env<{ JWT_SECRET: string }, typeof c>(c);
-    const token = await sign({ ...fulluser, password: undefined }, JWT_SECRET);
-    return c.json({ token });
-  });
+  );
   return authApp;
 }

@@ -1,11 +1,14 @@
 import type { Context } from "hono";
 import type { ContextVariables } from "../constants";
+import mainLogger from "../loggers";
 
 interface CacheEntry {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   body: any;
   expiration: number;
 }
+
+const logger = mainLogger.child({ name: "cacheMiddleware" });
 
 export const cacheMiddleware = () => {
   const cache = new Map<string, CacheEntry>();
@@ -17,6 +20,8 @@ export const cacheMiddleware = () => {
       cache: (body: object, expiration: number = 3600) => {
         const expireAt = Date.now() + expiration * 1000;
         const entry = { body, expiration: expireAt };
+        logger.info(`
+          Setting cache key: ${cacheKey}, to${JSON.stringify(entry)}`);
         cache.set(cacheKey, entry);
       },
       clear: () => {
@@ -24,14 +29,27 @@ export const cacheMiddleware = () => {
       },
       clearPath: (path: string) => {
         const fullKey = `${path}:${userId}`;
+        logger.info(`Clearing cache key: ${fullKey}`);
         cache.delete(fullKey);
       },
     });
     if (c.req.method.toUpperCase() === "GET") {
       const cacheEntry = cache.get(cacheKey);
       if (cacheEntry) {
+        logger.debug(
+          `Found cache entry: ${cacheKey}, to${JSON.stringify(cacheEntry)}`
+        );
         if (cacheEntry.expiration > Date.now()) {
+          logger.debug(
+            `return from key: ${cacheKey}, body: ${JSON.stringify(
+              cacheEntry.body
+            )}`
+          );
           return c.json(cacheEntry.body);
+        } else {
+          logger.debug(
+            `Cache entry expired cache key: ${cacheKey}, expiration: ${cacheEntry?.expiration}`
+          );
         }
       }
     }

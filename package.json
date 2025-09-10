@@ -5,12 +5,14 @@
   },
   "dependencies": {
     "hono": "^4.9.6",
+    "pg": "^8.11.3",
     "pino": "^9.9.4"
   },
   "devDependencies": {
     "@eslint/js": "^9.34.0",
     "@hono/zod-validator": "^0.7.2",
     "@types/bun": "latest",
+    "@types/pg": "^8.10.9",
     "eslint": "^9.34.0",
     "globals": "^16.3.0",
     "jiti": "^2.5.1",

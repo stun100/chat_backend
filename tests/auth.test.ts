@@ -1,11 +1,16 @@
 import { beforeEach, describe, expect, test } from "bun:test";
-import { createInMemoryApp } from "../src/controllers/main";
+import { createSQLApp } from "../src/controllers/main";
+import { Pool } from "pg";
+import { resetSQLDB } from "./utils";
 
 describe("auth tests", () => {
-  let app = createInMemoryApp();
+  const app = createSQLApp();
+  const pool = new Pool({
+    connectionString: Bun.env.TEST_DATABASE_URL,
+  });
 
   beforeEach(async () => {
-    app = createInMemoryApp();
+    await resetSQLDB(pool);
   });
   test("POST /register - normal case", async () => {
     const jsonBody = {

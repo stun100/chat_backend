@@ -24,6 +24,7 @@ import {
   UserSQLResource,
 } from "../storage/sql";
 import { Pool } from "pg";
+import { cacheMiddleware } from "../middlewares/cacheMiddleware";
 
 const corsOptions = {
   origin: [Bun.env.CORS_ORIGIN as string],
@@ -37,12 +38,13 @@ export function createMainApp(
   chatApp: Hono<ContextVariables>
 ) {
   const app = new Hono<ContextVariables>().basePath(API_PREFIX);
+  app.use("*", cors(corsOptions));
   app.use("*", timing());
   app.use("*", logger());
   app.use("*", checkJWTAuth);
   app.use("*", attachUserId);
   app.use("*", rateLimitMiddleware);
-  app.use("*", cors(corsOptions));
+  app.use("*", cacheMiddleware());
 
   app.route(AUTH_PREFIX, authApp);
   app.route(CHAT_PREFIX, chatApp);

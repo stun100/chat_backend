@@ -6,7 +6,7 @@ import { resetSQLDB } from "./utils";
 describe("auth tests", () => {
   const app = createSQLApp();
   const pool = new Pool({
-    connectionString: Bun.env.TEST_DATABASE_URL,
+    connectionString: Bun.env.DATABASE_URL,
   });
 
   beforeEach(async () => {
